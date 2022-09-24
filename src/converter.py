@@ -9,10 +9,10 @@ class ValueConverter:
 
     def convert(self, value):
         """converts a value to an immutable type"""
-        if type(value) == list:
+        if isinstance(value, list):
             converted_entries = map(self.convert, value)
             return tuple(converted_entries)
-        if type(value) == dict:
+        if isinstance(value, dict):
             type_name = f'DictType{self._num_types_created}'
             self._num_types_created += 1
             attributes = ' '.join(value.keys())
