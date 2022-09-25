@@ -1,5 +1,5 @@
 
-from src.converter import ValueConverter
+from src.config_maker.converter import ValueConverter
 
 import pytest
 

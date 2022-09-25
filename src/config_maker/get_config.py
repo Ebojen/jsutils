@@ -5,8 +5,8 @@ and returns configuration object
 import json
 import os
 
-from src.converter import ValueConverter
-from src.merger import merge_dicts
+from .converter import ValueConverter
+from .merger import merge_dicts
 
 
 def get_default_environment():
