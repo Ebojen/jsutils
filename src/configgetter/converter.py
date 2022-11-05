@@ -47,18 +47,63 @@ def convert(value, name):
 
         def get(self, key):
             dot_index = key.find('.')
-            if dot_index < 0:
+            if dot_index == 0:
+                return self.get(key[1:])
+
+            open_bracket_index = key.find('[')
+
+            if dot_index < 0 and open_bracket_index < 0:
                 return getattr(self, key)
-            next_obj = self.get(key[:dot_index])
-            return next_obj.get(key[dot_index + 1:])
+
+            if dot_index > 0 and open_bracket_index < 0:
+                simple_key_end = dot_index
+                next_key_start = dot_index + 1
+
+            if dot_index < 0 and open_bracket_index >= 0:
+                simple_key_end = open_bracket_index
+                next_key_start = open_bracket_index
+
+            if dot_index > 0 and open_bracket_index >= 0:
+                simple_key_end = min(dot_index, open_bracket_index)
+
+            if simple_key_end == dot_index:
+                next_key_start = dot_index + 1
+            else:
+                next_key_start = open_bracket_index
+
+            next_obj = self.get(key[:simple_key_end])
+            return next_obj.get(key[next_key_start:])
 
         def has(self, key):
             dot_index = key.find('.')
-            if dot_index < 0:
+            if dot_index == 0:
+                return self.has(key[1:])
+
+            open_bracket_index = key.find('[')
+
+            if dot_index < 0 and open_bracket_index < 0:
                 return hasattr(self, key)
-            if self.has(key[:dot_index]):
-                next_obj = self.get(key[:dot_index])
-                return next_obj.has(key[dot_index + 1:])
+
+            if dot_index > 0 and open_bracket_index < 0:
+                simple_key_end = dot_index
+                next_key_start = dot_index + 1
+
+            if dot_index < 0 and open_bracket_index >= 0:
+                simple_key_end = open_bracket_index
+                next_key_start = open_bracket_index
+
+            if dot_index > 0 and open_bracket_index >= 0:
+                simple_key_end = min(dot_index, open_bracket_index)
+
+            if simple_key_end == dot_index:
+                next_key_start = dot_index + 1
+            else:
+                next_key_start = open_bracket_index
+
+            if self.has(key[:simple_key_end]):
+                next_obj = self.get(key[:simple_key_end])
+                return next_obj.has(key[next_key_start:])
+
             return False
 
         new_type_plus = type(
