@@ -1,4 +1,4 @@
-from src.config_maker.merger import merge_dicts
+from src.configgetter.merger import merge_dicts
 
 
 class TestMerger:

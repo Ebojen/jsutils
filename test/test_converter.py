@@ -1,104 +1,225 @@
+from src.configgetter.converter import TuplePlus, convert
 
-from src.config_maker.converter import ValueConverter
-
-import pytest
 
 class TestConvertValue:
-    @pytest.fixture
-    def value_converter(self):
-        return ValueConverter()
+    def test_should_return_strings_with_no_changes(self):
+        test_data = "this is a string"
 
-    def test_should_return_strings_with_no_changes(self, value_converter):
-        test_data = 'this is a string'
-
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_data")
 
         assert result == test_data
 
-    def test_should_return_ints_with_no_changes(self, value_converter):
+    def test_should_return_ints_with_no_changes(self):
         test_data = 45
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_value")
 
         assert result == test_data
 
-    def test_should_return_floats_with_no_changes(self, value_converter):
+    def test_should_return_floats_with_no_changes(self):
         test_data = 3.14
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_data")
 
         assert result == test_data
 
-    def test_should_return_booleans_with_no_changes(self, value_converter):
+    def test_should_return_booleans_with_no_changes(self):
         test_data = [True, False]
 
         for bool in test_data:
-            result = value_converter.convert(bool)
+            result = convert(bool, "test_data")
 
             assert result == bool
 
-    def test_should_return_None_with_no_changes(self, value_converter):
+    def test_should_return_None_with_no_changes(self):
         test_data = None
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_data")
 
         assert result == test_data
 
-    def test_should_convert_lists_of_primitives_as_tuples(self, value_converter):
+    def test_should_convert_lists_of_primitives_as_tuples(self):
         num_data = [1, 2.71, 3]
-        string_data = ['one', 'two']
-        other_data = [True, False, None]
+        string_data = ["one", "two"]
+        singleton_data = [True, False, None]
 
-        num_result = value_converter.convert(num_data)
-        string_result = value_converter.convert(string_data)
-        other_result = value_converter.convert(other_data)
+        num_result = convert(num_data, "num_data")
+        string_result = convert(string_data, "string_data")
+        other_result = convert(singleton_data, "singleton_data")
 
         assert num_result == (1, 2.71, 3)
-        assert string_result == ('one', 'two')
+        assert string_result == ("one", "two")
         assert other_result == (True, False, None)
 
-    def test_should_covert_dicts_of_primitives_as_named_tuples(self, value_converter):
+    def test_should_covert_dicts_of_primitives_as_named_tuples(self):
         test_data = {
-            'str_key': 'one',
-            'num_key': 2,
-            'singleton_key': False,
+            "str_key": "one",
+            "num_key": 2,
+            "singleton_key": False,
         }
-        string_repr = "DictType0(str_key='one', num_key=2, singleton_key=False)"
-        attributes = ('str_key', 'num_key', 'singleton_key')
+        string_repr = "TestDataPlus(str_key='one', num_key=2, singleton_key=False)"
+        attributes = ("str_key", "num_key", "singleton_key")
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_data")
 
         assert str(result) == string_repr
         assert result._fields == attributes
-        assert result.str_key == 'one'
+        assert result.str_key == "one"
         assert result.num_key == 2
         assert result.singleton_key is False
 
-    def test_should_convert_arrays_of_complex_types(self, value_converter):
+    def test_should_convert_arrays_of_complex_types(self):
         test_data = [
-            [1, 3, {'first': 'one'}],
-            {'array_key': [1, True, None], 'dict_key': {'col1': 1}}
+            [1, 3, {"first": "one"}],
+            {"array_key": [1, True, None], "dict_key": {"col1": 1}},
         ]
-        string_repr = "((1, 3, DictType0(first='one')), DictType1(array_key=(1, True, None), dict_key=DictType2(col1=1)))"
+        string_repr = (
+            "((1, 3, TestArray02Plus(first='one')), "
+            "TestArray1Plus(array_key=(1, True, None), "
+            "dict_key=DictKeyPlus(col1=1)))"
+        )
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_array")
 
         assert str(result) == string_repr
 
-    def test_should_convert_dictionaries_of_complex_types(self, value_converter):
+    def test_should_convert_dictionaries_of_complex_types(self):
         test_data = {
-            'array_key': [1, True, None],
-            'dict_key': {'col1': 1},
-            'str_key': 'Hello PyConfig',
-            'num_key': 1.62,
-            'singleton_key': True,
+            "array_key": [1, True, None],
+            "dict_key": {"col1": 1},
+            "str_key": "Hello PyConfig",
+            "num_key": 1.62,
+            "singleton_key": True,
         }
         string_repr = (
-            "DictType0(array_key=(1, True, None), "
-            "dict_key=DictType1(col1=1), str_key='Hello PyConfig', "
+            "TestDataPlus(array_key=(1, True, None), "
+            "dict_key=DictKeyPlus(col1=1), str_key='Hello PyConfig', "
             "num_key=1.62, singleton_key=True)"
         )
 
-        result = value_converter.convert(test_data)
+        result = convert(test_data, "test_data")
 
         assert str(result) == string_repr
+
+    class TestGet:
+        def test_should_return_the_value_at_the_key_if_final_value_in_access_string(  # pylint: disable=line-too-long
+            self,
+        ):
+            test_data = {
+                "str_key": "Hello Configurator",
+                "num_key": 1.62,
+                "singleton_key": True,
+            }
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.get("str_key") == "Hello Configurator"
+            assert new_obj.get("num_key") == 1.62
+            assert new_obj.get("singleton_key") is True
+
+        def test_should_call_get_on_the_sub_object_for_multipart_keys(self):
+            test_data = {"col1": {"col2": 2.0}}
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.get("col1.col2") == 2.0
+
+        def test_should_return_the_value_for_a_simple_int_convertable_index(self):
+            test_data = convert(["a", "b", "c"], "test_list")
+
+            assert test_data.get("0") == "a"
+            assert test_data.get("1") == "b"
+            assert test_data.get("2") == "c"
+
+        def test_should_return_the_value_for_a_int_string_in_brackets(self):
+            test_data = convert(["a", "b", "c"], "test_list")
+
+            assert test_data.get("[0]") == "a"
+            assert test_data.get("[1]") == "b"
+            assert test_data.get("[2]") == "c"
+
+        def test_should_return_the_value_for_a_chain_of_bracketed_ints(self):
+            test_data = convert([["a1", "b1"], ["a2", "b2"]], "test_data")
+
+            assert test_data.get("[0][0]") == "a1"
+            assert test_data.get("[0][1]") == "b1"
+            assert test_data.get("[1][0]") == "a2"
+            assert test_data.get("[1][1]") == "b2"
+
+    class TestHas:
+        def test_should_return_the_true_if_key_is_final_value_in_access_string(  # pylint: disable=line-too-long
+            self,
+        ):
+            test_data = {
+                "str_key": "Hello Configurator",
+                "num_key": 1.62,
+                "singleton_key": True,
+            }
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.has("str_key") is True
+            assert new_obj.has("num_key") is True
+            assert new_obj.has("singleton_key") is True
+
+        def test_should_return_false_if_a_simple_key_is_not_present(self):
+            test_data = {"col1": 1}
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.has("col2") is False
+
+        def test_should_call_get_on_the_sub_object_for_multipart_keys(self):
+            test_data = {"col1": {"col2": 2.0}}
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.has("col1.col2") is True
+
+        def test_should_return_false_if_the_initial_key_is_not_present(self):
+            test_data = {"col1": {"col2": 2.0}}
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.has("col3.col2") is False
+
+        def test_should_return_false_if_deep_key_values_are_not_present(self):
+            test_data = {"col1": {"col2": 2.0}}
+
+            new_obj = convert(test_data, "test_data")
+
+            assert new_obj.has("col1.col3") is False
+
+        def test_should_return_true_for_a_simple_int_convertable_index_that_is_present(
+            self,
+        ):
+            test_data = convert(["a", "b", "c"], "test_list")
+
+            assert test_data.has("0") is True
+            assert test_data.has("1") is True
+            assert test_data.has("2") is True
+
+        def test_should_return_the_value_for_a_int_string_in_brackets(self):
+            test_data = convert(["a", "b", "c"], "test_list")
+
+            assert test_data.has("[0]") is True
+            assert test_data.has("[1]") is True
+            assert test_data.has("[2]") is True
+
+        def test_should_return_the_value_for_a_chain_of_bracketed_ints(self):
+            test_data = convert([["a1", "b1"], ["a2", "b2"]], "test_data")
+
+            assert test_data.has("[0][0]") is True
+            assert test_data.has("[0][1]") is True
+            assert test_data.has("[1][0]") is True
+            assert test_data.has("[1][1]") is True
+
+        def test_should_return_false_if_a_simple_index_is_out_of_bounds(self):
+            test_data = convert(["a", "b", "c"], "test_list")
+
+            assert test_data.has("3") is False
+
+        def test_should_return_false_if_the_first_index_in_a_chain_is_not_present(self):
+            test_data = convert([["a1", "b1"]], "test_list")
+
+            assert test_data.has("[3][0]") is False
