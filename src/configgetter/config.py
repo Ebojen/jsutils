@@ -4,6 +4,7 @@ and returns configuration object
 
 import json
 import os
+from pathlib import Path
 from typing import Dict
 
 from .converter import convert
@@ -49,17 +50,23 @@ def get_config(directory="./config", environment=get_default_environment()):
     if config:
         return config
 
-    files = os.listdir(directory)
+    config_path = Path(directory)
+    if not config_path.exists():
+        raise FileNotFoundError('Specified configuration directory not present')
+
+    default_file = config_path / 'default.json'
+    environment_file = config_path / f'{environment}.json'
+    custom_env_var_file = config_path / 'custom_environment_variables.json'  # noqa: E501
 
     # TODO: Use proper paths, don't be a pyschopath
-    if "default.json" in files:
-        path = f"{directory}/default.json"
-        with open(path, "r", encoding="UTF-8") as default_file:
+    if default_file.exists():
+        with open(default_file, "r", encoding="UTF-8") as default_file:
             default_config = json.load(default_file)
+    else:
+        default_config = {}
 
-    if f"{environment}.json" in files:
-        path = f"{directory}/{environment}.json"
-        with open(path, "r", encoding="UTF-8") as env_file:
+    if environment_file.exists():
+        with open(environment_file, "r", encoding="UTF-8") as env_file:
             env_config = json.load(env_file)
     else:
         raise ImportError(
@@ -68,9 +75,8 @@ def get_config(directory="./config", environment=get_default_environment()):
 
     environment_config = merge_dicts(default_config, env_config)
 
-    if "custom_environment_variables.json" in files:
-        path = f"{directory}/custom_environment_variables.json"
-        custom_environment_variables = get_custom_environment_vars(path)
+    if custom_env_var_file.exists():
+        custom_environment_variables = get_custom_environment_vars(custom_env_var_file)  # noqa: E501
     else:
         custom_environment_variables = {}
 
