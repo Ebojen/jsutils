@@ -104,9 +104,7 @@ class TestConvertValue:
         assert str(result) == string_repr
 
     class TestGet:
-        def test_should_return_the_value_at_the_key_if_final_value_in_access_string(  # pylint: disable=line-too-long
-            self,
-        ):
+        def test_should_return_the_value_at_the_key_if_final_value_in_access_string(self):  # noqa: E501
             test_data = {
                 "str_key": "Hello Configurator",
                 "num_key": 1.62,
@@ -127,12 +125,12 @@ class TestConvertValue:
             assert new_obj.get("col1.col2") == 2.0
 
         def test_should_raise_exception_if_the_key_has_too_much_depth(self):
-            test_data = convert({"col1": "a1"}, 'test_data')
+            test_data = convert({"col1": "a1"}, "test_data")
 
             with pytest.raises(AttributeError):
                 test_data.get("col1.col2")
 
-        def test_should_return_the_value_for_a_simple_int_convertable_index(self):
+        def test_should_return_the_value_for_a_simple_int_convertable_index(self):  # noqa: E501
             test_data = convert(["a", "b", "c"], "test_list")
 
             assert test_data.get("0") == "a"
@@ -165,30 +163,23 @@ class TestConvertValue:
             assert test_data.get("col1[2]") == "a3"
 
         def test_should_return_the_value_for_a_dict_key_in_a_list(self):
-            test_data = convert(
-                [{"col1": 1.0}],
-                'test_data'
-            )
+            test_data = convert([{"col1": 1.0}], "test_data")
 
-            assert test_data.get('[0].col1') == 1.0
+            assert test_data.get("[0].col1") == 1.0
 
         def test_should_return_the_value_for_a_long_key(self):
-            test_data = convert({
-                    "col0": [{
-                        "idx0col0": "a",
-                        "idx0col1": "b"
-                    }],
-                    "col1": {
-                        "col1col1": ["a11", "b11"]
-                    }
+            test_data = convert(
+                {
+                    "col0": [{"idx0col0": "a", "idx0col1": "b"}],
+                    "col1": {"col1col1": ["a11", "b11"]},
                 },
-                "test_data"
+                "test_data",
             )
 
             assert test_data.get("col0[0].idx0col1") == "b"
 
     class TestHas:
-        def test_should_return_the_true_if_key_is_final_value_in_access_string(  # pylint: disable=line-too-long
+        def test_should_return_true_if_key_is_final_value_in_access_string(
             self,
         ):
             test_data = {
@@ -231,7 +222,7 @@ class TestConvertValue:
 
             assert new_obj.has("col1.col3") is False
 
-        def test_should_return_true_for_a_simple_int_convertable_index_that_is_present(
+        def test_should_return_true_for_a_simple_int_convertable_index_that_is_present(  # noqa: E501
             self,
         ):
             test_data = convert(["a", "b", "c"], "test_list")
@@ -260,7 +251,7 @@ class TestConvertValue:
 
             assert test_data.has("3") is False
 
-        def test_should_return_false_if_the_first_index_in_a_chain_is_not_present(self):
+        def test_should_return_false_if_the_first_index_in_a_chain_is_not_present(self):  # noqa: E501
             test_data = convert([["a1", "b1"]], "test_list")
 
             assert test_data.has("[3][0]") is False
@@ -276,39 +267,28 @@ class TestConvertValue:
             assert test_data.has("col1[2]") is True
 
         def test_should_return_the_value_for_a_dict_key_in_a_list(self):
-            test_data = convert(
-                [{"col1": 1.0}],
-                'test_data'
-            )
+            test_data = convert([{"col1": 1.0}], "test_data")
 
-            assert test_data.has('[0].col1') is True
+            assert test_data.has("[0].col1") is True
 
         def test_should_return_the_value_for_a_long_key(self):
-            test_data = convert({
-                    "col0": [{
-                        "idx0col0": "a",
-                        "idx0col1": "b"
-                    }],
-                    "col1": {
-                        "col1col1": ["a11", "b11"]
-                    }
+            test_data = convert(
+                {
+                    "col0": [{"idx0col0": "a", "idx0col1": "b"}],
+                    "col1": {"col1col1": ["a11", "b11"]},
                 },
-                "test_data"
+                "test_data",
             )
 
             assert test_data.has("col0[0].idx0col1") is True
 
         def test_should_return_false_if_any_intermediate_key_is_not_present(self):
-            test_data = convert({
-                    "col0": [{
-                        "idx0col0": "a",
-                        "idx0col1": "b"
-                    }],
-                    "col1": {
-                        "col1col0": ["a11", "b11"]
-                    }
+            test_data = convert(
+                {
+                    "col0": [{"idx0col0": "a", "idx0col1": "b"}],
+                    "col1": {"col1col0": ["a11", "b11"]},
                 },
-                "test_data"
+                "test_data",
             )
 
             assert test_data.has("col2[0]") is False

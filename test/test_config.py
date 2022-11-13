@@ -44,6 +44,42 @@ class TestGetConfig:
         assert result.test_env_key == "test_env_value"
         assert "test_key" not in result._fields
 
+    def test_should_read_in_then_custom_env_vars(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("TOP_LEVEL_VALUE", "top_level_value")
+        monkeypatch.setenv("NESTED_OVERWRITTEN_VALUE", "nested_overwritten_value")  # noqa: E501
+        monkeypatch.setenv("NESTED_CREATED_VALUE", "nested_created_value")
+        importlib.reload(config)
+        d = tmp_path / "config"
+        d.mkdir()
+        default = d / "default.json"
+        default.write_text(json.dumps({"default_key": "default_value"}))
+        test = d / "test.json"
+        test.write_text(json.dumps({
+            "test_key": "test_value",
+            "nested_top": {
+                "nested_not_overwritten_key": "nested_not_overwritten",
+                "nested_overwritten_key": "value_to_be_overwritten",
+            }
+        }))
+        custom_env_vars = d / "custom_environment_variables.json"
+        custom_env_vars.write_text(json.dumps({
+            "top_level_key": "TOP_LEVEL_VALUE",
+            "nested_top": {
+                "nested_overwritten_key": "NESTED_OVERWRITTEN_VALUE",
+                "nested_created_key": "NESTED_CREATED_VALUE"
+            }
+        }))
+
+        result = config.get_config(directory=d)
+
+        assert result.get('default_key') == 'default_value'
+        assert result.get('test_key') == 'test_value'
+        assert result.get('top_level_key') == 'top_level_value'
+        assert result.get('nested_top.nested_not_overwritten_key') == 'nested_not_overwritten'  # noqa: E501
+        assert result.get('nested_top.nested_overwritten_key') == 'nested_overwritten_value'  # noqa: E501
+        assert result.get('nested_top.nested_created_key') == 'nested_created_value'  # noqa: E501
+
+
     def test_should_raise_an_exception_if_there_is_not_a_config_for_the_env(
         self, tmp_path, monkeypatch
     ):
