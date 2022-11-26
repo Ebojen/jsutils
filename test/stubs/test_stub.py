@@ -52,19 +52,42 @@ class TestStub:
         stub = get_stub()
         stub.returns("test_value")
 
-        result = stub()
+        result_1 = stub()
+        result_2 = stub()
 
-        assert result == "test_value"
+        assert result_1 == "test_value"
+        assert result_2 == "test_value"
 
-    def test_should_return_the_configured_return_values(self):
+    def test_should_throw_the_provided_error(self):
         stub = get_stub()
-        stub.on_call_count(0).returns("test_value_1").on_call_count(1).returns(8675309)  # noqa: E501
+        stub.raises(RuntimeError("Boom!"))
+
+        with pytest.raises(RuntimeError, match="Boom!"):
+            stub()
+
+    def test_should_return_the_configured_return_values_by_call_count(self):
+        stub = get_stub()
+        stub.on_call(0).returns("test_value_1") \
+            .on_call(1).returns(8675309)
 
         result_1 = stub()
         result_2 = stub()
 
         assert result_1 == "test_value_1"
         assert result_2 == 8675309
+
+    def test_should_resort_to_default_behavior_if_the_call_count_has_not_been_set(self):  # noqa: E501
+        stub = get_stub()
+        stub.returns(42)
+        stub.on_call(1).returns('apple pie')
+
+        result_0 = stub()
+        result_1 = stub()
+        result_2 = stub()
+
+        assert result_0 == 42
+        assert result_1 == 'apple pie'
+        assert result_2 == 42
 
     def test_should_configure_the_first_call(self):
         stub = get_stub()
@@ -76,9 +99,8 @@ class TestStub:
 
     def test_should_configure_the_second_call(self):
         stub = get_stub()
-        stub.on_first_call().returns("first_call").on_second_call().returns(
-            "second_call"
-        )
+        stub.on_first_call().returns("first_call") \
+            .on_second_call().returns("second_call")
 
         result_1 = stub()
         result_2 = stub()
@@ -88,9 +110,9 @@ class TestStub:
 
     def test_should_configure_the_third_call(self):
         stub = get_stub()
-        stub.on_first_call().returns("first_call").on_second_call().returns(
-            "second_call"
-        ).on_third_call().raises(ValueError("Its too much"))
+        stub.on_first_call().returns("first_call") \
+            .on_second_call().returns("second_call") \
+            .on_third_call().raises(ValueError("Its too much"))
 
         result_1 = stub()
         result_2 = stub()
@@ -123,12 +145,30 @@ class TestStub:
 
         assert result_3 == "StringOneStringTwo"
 
-    def test_should_throw_the_provided_error(self):
+    def test_should_use_the_configured_response_for_specific_args(self):
         stub = get_stub()
-        stub.raises(RuntimeError("Boom!"))
+        stub.with_args(42, kwarg1='kwarg!') \
+            .returns('The meaning of life')
+        stub.with_args(kwarg2=13) \
+            .raises(RuntimeError('Unlucky!'))
 
-        with pytest.raises(RuntimeError, match="Boom!"):
-            stub()
+        result = stub(42, kwarg1='kwarg!')
+        assert result == 'The meaning of life'
+
+        with pytest.raises(RuntimeError, match='Unlucky!'):
+            stub(kwarg2=13)
+
+    def test_should_used_the_configured_call_count_behaviors_for_specific_args(self):
+        stub = get_stub()
+        stub.with_args(3.14, kwarg1='PI!') \
+            .on_call(2) \
+            .returns('Pumpkin PI!') \
+            .on_call(3) \
+            .raises(RuntimeError('NO PI FOR YOU!'))
+        stub.returns('Apple PI')
+
+        result_1 = stub(55)
+        assert result_1 == 'Apple PI'
 
     def test_should_replace_the_given_method_on_an_obj(self):
         class TestClass:
@@ -159,7 +199,8 @@ class TestStub:
                 return num + 3
 
         obj = TestClass()
-        get_stub(obj, "add_three")
+        stub = get_stub(obj, "add_three")
+        stub.returns(50)
         obj.add_three.restore()
 
         result = obj.add_three(5)
