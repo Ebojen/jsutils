@@ -76,7 +76,7 @@ class TestStub:
         assert result_1 == "test_value_1"
         assert result_2 == 8675309
 
-    def test_should_resort_to_default_behavior_if_the_call_count_has_not_been_set(self):  # noqa: E501
+    def test_should_resort_to_default_behavior_if_the_call_count_has_not_been_set(self):  # NOQA: E501
         stub = get_stub()
         stub.returns(42)
         stub.on_call(1).returns('apple pie')
@@ -158,7 +158,7 @@ class TestStub:
         with pytest.raises(RuntimeError, match='Unlucky!'):
             stub(kwarg2=13)
 
-    def test_should_used_the_configured_call_count_behaviors_for_specific_args(self):
+    def test_should_used_the_configured_call_count_behaviors_for_specific_args(self):  # NOQA: E501
         stub = get_stub()
         stub.with_args(3.14, kwarg1='PI!') \
             .on_call(2) \
@@ -206,3 +206,66 @@ class TestStub:
         result = obj.add_three(5)
 
         assert result == 8
+
+    def test_should_be_able_to_assert_on_call_history(self):
+        stub = get_stub()
+        stub.returns('abc')
+        expected_first_call = (
+            (1, 'a'),
+            {'first_kwarg': 0, 'second_kwarg': 'b'}
+        )
+        expected_second_call = ((), {'only_a_kwarg': 'kwarg!'})
+        expected_third_call = (('only_an_arg',), {})
+
+        stub(1, 'a', first_kwarg=0, second_kwarg='b')
+        stub(only_a_kwarg='kwarg!')
+        stub('only_an_arg')
+
+        assert expected_first_call == stub.call_history[0]
+        assert expected_second_call in stub.call_history
+        assert expected_third_call in stub.call_history
+
+    def test_should_identify_if_the_provided_args_were_used_to_call_the_stub(self):  # NOQA: E501
+        stub = get_stub()
+        stub('first_arg', 1)
+
+        assert stub.called_with('first_arg', 1) is True
+        assert stub.called_with('first_arg', 2) is False
+        assert stub.called_with('wrong_first_arg', 1) is False
+
+    def test_should_identify_if_the_provided_kwargs_were_used_to_call_the_stub(self):  # NOQA: E501
+        stub = get_stub()
+        stub(kwarg_1='kwarg_1_value', kwarg_2=1)
+
+        assert stub.called_with(kwarg_1='kwarg_1_value', kwarg_2=1) is True
+        assert stub.called_with(kwarg_1='kwarg_1_value', kwarg_2=2) is False
+        assert stub.called_with(
+            kwarg_1='not_kwarg_1_value',
+            kwarg_2=1
+        ) is False
+
+    def test_should_identify_if_the_provided_call_was_made(self):
+        stub = get_stub()
+        stub(0, kwarg_1='kwarg_1_value')
+
+        assert stub.called_with(
+            0, kwarg_1='kwarg_1_value'
+        ) is True
+        assert stub.called_with(
+            1, kwarg_1='kwarg_1_value'
+        ) is False
+        stub.called_with(
+            0, kwarg_1='not_kwarg_1_value'
+        ) is False
+        stub.called_with(
+            0, 1, kwarg_1='kwarg_1_value'
+        ) is False
+        assert stub.called_with(
+            0, kwarg_1='kwarg_1_value', kwarg_2=None
+        ) is False
+
+    def test_should_set_the_provided_attributes(self):
+        stub = get_stub(attrs={'attr1': 'value1', 'attr2': 3.14159})
+
+        assert getattr(stub, 'attr1') == 'value1'
+        assert getattr(stub, 'attr2') == 3.14159

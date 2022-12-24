@@ -52,13 +52,14 @@ def get_config(directory="./config", environment=get_default_environment()):
 
     config_path = Path(directory)
     if not config_path.exists():
-        raise FileNotFoundError('Specified configuration directory not present')
+        raise FileNotFoundError(
+            'Specified configuration directory not present'
+        )
 
     default_file = config_path / 'default.json'
     environment_file = config_path / f'{environment}.json'
-    custom_env_var_file = config_path / 'custom_environment_variables.json'  # noqa: E501
+    custom_env_var_file = config_path / 'custom_environment_variables.json'  # NOQA: E501
 
-    # TODO: Use proper paths, don't be a pyschopath
     if default_file.exists():
         with open(default_file, "r", encoding="UTF-8") as default_file:
             default_config = json.load(default_file)
@@ -71,16 +72,16 @@ def get_config(directory="./config", environment=get_default_environment()):
     else:
         raise ImportError(
             f"No configuration for {environment} environment found."
-        )  # noqa: E501
+        )  # NOQA: E501
 
     environment_config = merge_dicts(default_config, env_config)
 
     if custom_env_var_file.exists():
-        custom_environment_variables = get_custom_environment_vars(custom_env_var_file)  # noqa: E501
+        custom_environment_variables = get_custom_environment_vars(custom_env_var_file)  # NOQA: E501
     else:
         custom_environment_variables = {}
 
-    total_config = merge_dicts(environment_config, custom_environment_variables)  # noqa: E501
+    total_config = merge_dicts(environment_config, custom_environment_variables)  # NOQA: E501
     config = convert(total_config, "Config")
 
     return config

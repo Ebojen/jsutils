@@ -36,7 +36,7 @@ def test_should_raise_the_configured_exception(behavior):
         behavior()
 
 
-def test_should_raise_the_exception_when_both_exception_and_return_value_are_set(behavior):  # noqa: E501
+def test_should_raise_the_exception_when_both_exception_and_return_value_are_set(behavior):  # NOQA: E501
     behavior.returns('this_shouldnt_happen')
     behavior.raises(RuntimeError('This should explode'))
 

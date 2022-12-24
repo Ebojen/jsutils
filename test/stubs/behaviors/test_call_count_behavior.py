@@ -19,7 +19,7 @@ def test_should_set_the_call_behavior_and_return_itself(behavior):
     assert result == behavior
 
 
-def test_should_return_the_configured_return_value_for_the_configured_call(behavior):  # noqa: E501
+def test_should_return_the_configured_return_value_for_the_configured_call(behavior):  # NOQA: E501
     behavior.on_call(2).returns('test_value_2')
 
     assert behavior(2) == 'test_value_2'
@@ -45,7 +45,7 @@ def test_should_allow_method_chaining(behavior):
         behavior(2)
 
 
-def test_should_raise_call_not_implemented_error_if_the_behavior_is_not_configured(behavior):  # noqa: E501
+def test_should_raise_call_not_implemented_error_if_the_behavior_is_not_configured(behavior):  # NOQA: E501
     behavior.on_call(0).returns('Happy Day')
 
     assert behavior(0)

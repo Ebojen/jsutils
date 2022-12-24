@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from src.configgetter import config
+from src.config import config
 
 
 class TestGetConfig:
@@ -11,7 +11,7 @@ class TestGetConfig:
         with pytest.raises(FileNotFoundError):
             config.get_config()
 
-    def test_should_default_to_test_environment_if_not_set_or_provided(self, tmp_path):
+    def test_should_default_to_test_environment_if_not_set_or_provided(self, tmp_path):  # NOQA: E501
         d = tmp_path / "config"
         d.mkdir()
         default = d / "default.json"
@@ -46,7 +46,7 @@ class TestGetConfig:
 
     def test_should_read_in_then_custom_env_vars(self, tmp_path, monkeypatch):
         monkeypatch.setenv("TOP_LEVEL_VALUE", "top_level_value")
-        monkeypatch.setenv("NESTED_OVERWRITTEN_VALUE", "nested_overwritten_value")  # noqa: E501
+        monkeypatch.setenv("NESTED_OVERWRITTEN_VALUE", "nested_overwritten_value")  # NOQA: E501
         monkeypatch.setenv("NESTED_CREATED_VALUE", "nested_created_value")
         importlib.reload(config)
         d = tmp_path / "config"
@@ -75,10 +75,9 @@ class TestGetConfig:
         assert result.get('default_key') == 'default_value'
         assert result.get('test_key') == 'test_value'
         assert result.get('top_level_key') == 'top_level_value'
-        assert result.get('nested_top.nested_not_overwritten_key') == 'nested_not_overwritten'  # noqa: E501
-        assert result.get('nested_top.nested_overwritten_key') == 'nested_overwritten_value'  # noqa: E501
-        assert result.get('nested_top.nested_created_key') == 'nested_created_value'  # noqa: E501
-
+        assert result.get('nested_top.nested_not_overwritten_key') == 'nested_not_overwritten'  # NOQA: E501
+        assert result.get('nested_top.nested_overwritten_key') == 'nested_overwritten_value'  # NOQA: E501
+        assert result.get('nested_top.nested_created_key') == 'nested_created_value'  # NOQA: E501
 
     def test_should_raise_an_exception_if_there_is_not_a_config_for_the_env(
         self, tmp_path, monkeypatch
@@ -93,7 +92,8 @@ class TestGetConfig:
         test.write_text(json.dumps({"test_key": "test_value"}))
 
         with pytest.raises(
-            ImportError, match="No configuration for test_env environment found."
+            ImportError,
+            match="No configuration for test_env environment found."
         ):
             config.get_config(directory=d)
 

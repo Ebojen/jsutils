@@ -32,7 +32,7 @@ def test_should_implement_call_count_behavior(behavior):
         behavior(42, test_key='test_value')
 
 
-def test_should_use_default_behavior_if_call_count_behavior_is_not_configured(behavior):  # noqa: E501
+def test_should_use_default_behavior_if_call_count_behavior_is_not_configured(behavior):  # NOQA: E501
     behavior.with_args('test_arg').returns(0)
     behavior.with_args('test_arg') \
         .on_call(1) \
@@ -43,7 +43,7 @@ def test_should_use_default_behavior_if_call_count_behavior_is_not_configured(be
     assert behavior('test_arg') == 0
 
 
-def test_should_raise_call_not_implemented_if_not_behavior_is_configured(behavior):
+def test_should_raise_call_not_implemented_if_not_behavior_is_configured(behavior):  # NOQA: #501
     behavior.with_args('test_arg').returns(50)
 
     assert behavior('test_arg') == 50

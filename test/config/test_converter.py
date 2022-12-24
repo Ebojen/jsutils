@@ -1,6 +1,6 @@
 import pytest
 
-from src.configgetter.converter import TuplePlus, convert
+from src.config.converter import convert
 
 
 class TestConvertValue:
@@ -59,7 +59,10 @@ class TestConvertValue:
             "num_key": 2,
             "singleton_key": False,
         }
-        string_repr = "TestDataPlus(str_key='one', num_key=2, singleton_key=False)"
+        string_repr = (
+            "TestDataPlus(str_key='one', num_key=2, "
+            "singleton_key=False)"
+        )
         attributes = ("str_key", "num_key", "singleton_key")
 
         result = convert(test_data, "test_data")
@@ -104,7 +107,7 @@ class TestConvertValue:
         assert str(result) == string_repr
 
     class TestGet:
-        def test_should_return_the_value_at_the_key_if_final_value_in_access_string(self):  # noqa: E501
+        def test_should_return_the_value_at_the_key_if_final_value_in_access_string(self):  # NOQA: E501
             test_data = {
                 "str_key": "Hello Configurator",
                 "num_key": 1.62,
@@ -130,7 +133,7 @@ class TestConvertValue:
             with pytest.raises(AttributeError):
                 test_data.get("col1.col2")
 
-        def test_should_return_the_value_for_a_simple_int_convertable_index(self):  # noqa: E501
+        def test_should_return_the_value_for_a_simple_int_convertable_index(self):  # NOQA: E501
             test_data = convert(["a", "b", "c"], "test_list")
 
             assert test_data.get("0") == "a"
@@ -222,7 +225,7 @@ class TestConvertValue:
 
             assert new_obj.has("col1.col3") is False
 
-        def test_should_return_true_for_a_simple_int_convertable_index_that_is_present(  # noqa: E501
+        def test_should_return_true_for_a_simple_int_convertable_index_that_is_present(  # NOQA: E501
             self,
         ):
             test_data = convert(["a", "b", "c"], "test_list")
@@ -251,7 +254,7 @@ class TestConvertValue:
 
             assert test_data.has("3") is False
 
-        def test_should_return_false_if_the_first_index_in_a_chain_is_not_present(self):  # noqa: E501
+        def test_should_return_false_if_the_first_index_in_a_chain_is_not_present(self):  # NOQA: E501
             test_data = convert([["a1", "b1"]], "test_list")
 
             assert test_data.has("[3][0]") is False
@@ -282,7 +285,7 @@ class TestConvertValue:
 
             assert test_data.has("col0[0].idx0col1") is True
 
-        def test_should_return_false_if_any_intermediate_key_is_not_present(self):
+        def test_should_return_false_if_any_intermediate_key_is_not_present(self):  # NOQA: E501
             test_data = convert(
                 {
                     "col0": [{"idx0col0": "a", "idx0col1": "b"}],

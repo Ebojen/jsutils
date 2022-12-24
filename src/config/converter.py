@@ -4,30 +4,31 @@ from collections import namedtuple
 
 
 class TuplePlus(tuple):
+    # TODO: refactor to reduce duplicate code
     def get(self, index_str: str):
-        open_bracket_index = index_str.find('[')
-        close_bracket_index = index_str.find(']')
-        if open_bracket_index == 0 and close_bracket_index > 0:
-            int_index_str = index_str[open_bracket_index + 1: close_bracket_index]
+        open_bracket_idx = index_str.find('[')
+        close_bracket_idx = index_str.find(']')
+        if open_bracket_idx == 0 and close_bracket_idx > 0:
+            int_index_str = index_str[open_bracket_idx + 1: close_bracket_idx]
             index = int(int_index_str)
-            if close_bracket_index == len(index_str) - 1:
+            if close_bracket_idx == len(index_str) - 1:
                 return self[index]
             sub_tuple_plus = self[index]
-            return sub_tuple_plus.get(index_str[close_bracket_index + 1:])
+            return sub_tuple_plus.get(index_str[close_bracket_idx + 1:])
         index = int(index_str)
         return self[index]
 
     def has(self, index_str: str) -> bool:
-        open_bracket_index = index_str.find('[')
-        close_bracket_index = index_str.find(']')
-        if open_bracket_index == 0 and close_bracket_index > 1:
-            int_index_str = index_str[open_bracket_index + 1: close_bracket_index]
+        open_bracket_idx = index_str.find('[')
+        close_bracket_idx = index_str.find(']')
+        if open_bracket_idx == 0 and close_bracket_idx > 1:
+            int_index_str = index_str[open_bracket_idx + 1: close_bracket_idx]
             index = int(int_index_str)
-            if close_bracket_index == len(index_str) - 1:
+            if close_bracket_idx == len(index_str) - 1:
                 return index >= 0 and index < len(self)
             if index >= 0 and index < len(self):
                 sub_tuple_plus = self[index]
-                return sub_tuple_plus.has(index_str[close_bracket_index + 1:])
+                return sub_tuple_plus.has(index_str[close_bracket_idx + 1:])
             return False
         index = int(index_str)
         return index >= 0 and index < len(self)
