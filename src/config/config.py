@@ -5,9 +5,9 @@ and returns configuration object
 import json
 import os
 from pathlib import Path
-from typing import Dict
 
 from .converter import convert
+from .env_var_config import get_custom_environment_vars
 from .merger import merge_dicts
 
 
@@ -18,23 +18,6 @@ def get_default_environment():
         default_environment = "test"
 
     return default_environment
-
-
-def convert_spec_to_values(spec: Dict):
-    for key, value in spec.items():
-        if isinstance(value, str):
-            spec[key] = os.environ[value]
-        else:
-            convert_spec_to_values(value)
-
-    return spec
-
-
-def get_custom_environment_vars(path):
-    with open(path, "r", encoding="UTF-8") as env_vars:
-        spec = json.load(env_vars)
-        convert_spec_to_values(spec)
-        return spec
 
 
 config = None

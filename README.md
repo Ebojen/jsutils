@@ -236,7 +236,7 @@ stub('first', 'second')  # 'firstsecond'
 
 
 ### Behavior on Specific Calls
-The stub can be configured to return a value or raise an exception on a specified 0 index based call. The stub will fall back to its default behavior if the specified call has not been configured. There are convenience functions for setting first, second, and third call behavior
+The stub can be configured to return a value or raise an exception on a specified 0 index based call. The stub will fall back to its default behavior if the specified call has not been configured. There are convenience functions for setting first, second, and third call behavior. Method chaining is required for proper use.
 
 ```python
 from jsutils.stubs import get_stub
@@ -255,7 +255,7 @@ stub()  # 'default_value'
 ```
 
 ### Behavior for Specific Call Signatures
-The stub can be configured to have specific behavior for specific call arguments. This behavior can be based on a call count or fall back to a default behavior. Call signature behavior supercedes call count and default behavior when applicable, but is superceded in priority by fake behaviors.
+The stub can be configured to have specific behavior for specific call arguments. This behavior can be based on a call count or fall back to a default behavior. Call signature behavior supercedes call count and default behavior when applicable, but is superceded in priority by fake behaviors. Method chaining is required for proper use.
 
 ```python
 from jsutils.stubs import get_stub

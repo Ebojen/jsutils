@@ -1,37 +1,66 @@
 """Converts a dict and its subsets to immutable types"""
-
 from collections import namedtuple
+from typing import Any, Tuple
 
 
 class TuplePlus(tuple):
+    """Extention of tuple adding get and has methods"""
+    def _find_brackets(self, index_str: str) -> Tuple[int, int]:
+        """Finds the brackets in an index_str"""
+        open_idx = index_str.find('[')
+        close_idx = index_str.find(']')
+        if open_idx > -1 and close_idx < -1:
+            raise IndexError('Invalid query string')
+        if close_idx > -1 and open_idx != 0:
+            raise IndexError('Invalid query string')
+        return (open_idx, close_idx)
+
+    def _is_bracketed(self, bracket_idxs: Tuple[int, int]) -> bool:
+        """Determines if a index string was bracketed"""
+        return bracket_idxs[0] == 0 and bracket_idxs[1] > 1
+
+    def _get_index(self, index_str: str, bracket_locs: Tuple[int, int]) -> int:
+        """Extracts the next index from the index str"""
+        if self._is_bracketed(bracket_locs):
+            return int(index_str[bracket_locs[0] + 1: bracket_locs[1]])
+        return int(index_str)
+
+    def _is_bracket_contained(self, index_str: str, close_idx: int) -> bool:
+        """Determines if the index string is bounded by brackets
+        Assumes the index string is bracketed"""
+        return len(index_str) == close_idx + 1
+
     # TODO: refactor to reduce duplicate code
-    def get(self, index_str: str):
-        open_bracket_idx = index_str.find('[')
-        close_bracket_idx = index_str.find(']')
-        if open_bracket_idx == 0 and close_bracket_idx > 0:
-            int_index_str = index_str[open_bracket_idx + 1: close_bracket_idx]
-            index = int(int_index_str)
-            if close_bracket_idx == len(index_str) - 1:
-                return self[index]
-            sub_tuple_plus = self[index]
-            return sub_tuple_plus.get(index_str[close_bracket_idx + 1:])
-        index = int(index_str)
+    def get(self, index_str: str) -> Any:
+        """Fetches the value at an index derived from the index_str
+        if a tuple has a given index
+
+        the index string can be directly convertable to an int or embedded
+        in brackets in a query string. The following are all valid: '1',
+        '[2].some_key', '[21][-4]'.
+
+        """
+        bracket_locs = self._find_brackets(index_str)
+        index = self._get_index(index_str, bracket_locs)
+        if self._is_bracketed(bracket_locs):
+            target_value = self[index]
+            if self._is_bracket_contained(index_str, bracket_locs[1]):
+                return target_value
+            return target_value.get(index_str[bracket_locs[1] + 1:])
         return self[index]
 
     def has(self, index_str: str) -> bool:
-        open_bracket_idx = index_str.find('[')
-        close_bracket_idx = index_str.find(']')
-        if open_bracket_idx == 0 and close_bracket_idx > 1:
-            int_index_str = index_str[open_bracket_idx + 1: close_bracket_idx]
-            index = int(int_index_str)
-            if close_bracket_idx == len(index_str) - 1:
-                return index >= 0 and index < len(self)
-            if index >= 0 and index < len(self):
-                sub_tuple_plus = self[index]
-                return sub_tuple_plus.has(index_str[close_bracket_idx + 1:])
+        """Determines if the tuple has the specified index"""
+        bracket_locs = self._find_brackets(index_str)
+        index = self._get_index(index_str, bracket_locs)
+        if self._is_bracketed(bracket_locs):
+            if self._is_bracket_contained(index_str, bracket_locs[1]):
+                return abs(index) < len(self)
+            if abs(index) < len(self):
+                return self[index] \
+                    .has(index_str[bracket_locs[1] + 1:])
             return False
-        index = int(index_str)
-        return index >= 0 and index < len(self)
+        return abs(index) < len(self)
 
 
 def convert(value, name):

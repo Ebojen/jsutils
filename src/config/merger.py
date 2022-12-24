@@ -1,8 +1,10 @@
 """Merges multiple dicts, replacing the keys of
 the previous values"""
 
+from typing import Any, Dict
 
-def merge_dicts(base: dict, updater: dict) -> dict:
+
+def merge_dicts(base: Dict[str, Any], updater: Dict[str, any]) -> Dict:
     """Deep merges two dictionaries recursively, updating values
     from the first, updating with values from the second.
     """
