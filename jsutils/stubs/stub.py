@@ -1,9 +1,9 @@
 from typing import Any, Callable, Dict
 
-from src.stubs.behaviors.call_count_behavior import CallCountBehavior
-from src.stubs.behaviors.default_behavior import DefaultBehavior
-from src.stubs.behaviors.fake_behavior import FakeBehavior
-from src.stubs.behaviors.with_args_behavior import (
+from .behaviors.call_count_behavior import CallCountBehavior
+from .behaviors.default_behavior import DefaultBehavior
+from .behaviors.fake_behavior import FakeBehavior
+from .behaviors.with_args_behavior import (
     ArgBehavior,
     WithArgsBehavior
 )
@@ -91,6 +91,14 @@ class Stub:
             return self.call_count_behavior(self.call_count - 1)
 
         return self.default_behavior()
+
+    def __repr__(self):
+        if self.original_object:
+            return (
+                f"Stub('{self.original_object.__name__}"
+                f".{self.method_name}')"
+            )
+        return 'Stub()'
 
 
 def get_stub(

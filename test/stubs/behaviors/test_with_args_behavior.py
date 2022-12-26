@@ -1,6 +1,6 @@
 import pytest
 
-from src.stubs.behaviors.with_args_behavior import (
+from jsutils.stubs.behaviors.with_args_behavior import (
     CallNotImplementedError,
     WithArgsBehavior,
 )

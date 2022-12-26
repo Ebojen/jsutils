@@ -1,6 +1,6 @@
 import pytest
 
-from src.stubs.stub import Stub, get_stub
+from jsutils.stubs.stub import Stub, get_stub
 
 
 class TestStub:

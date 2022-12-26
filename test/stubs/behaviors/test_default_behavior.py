@@ -1,6 +1,6 @@
 import pytest
 
-from src.stubs.behaviors.default_behavior import DefaultBehavior
+from jsutils.stubs.behaviors.default_behavior import DefaultBehavior
 
 
 @pytest.fixture

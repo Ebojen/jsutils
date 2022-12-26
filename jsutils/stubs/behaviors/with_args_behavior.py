@@ -1,10 +1,10 @@
 from typing import Any, Dict, Tuple
 
-from src.stubs.behaviors.call_count_behavior import (
+from .call_count_behavior import (
     CallCountBehavior,
     CallNotImplementedError,
 )
-from src.stubs.behaviors.default_behavior import DefaultBehavior
+from .default_behavior import DefaultBehavior
 
 
 class ArgBehavior:

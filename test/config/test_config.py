@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from src.config import config
+from jsutils.config import config
 
 
 class TestGetConfig:

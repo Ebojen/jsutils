@@ -1,5 +1,5 @@
 from unittest.mock import ANY
-from src.stubs.stub import get_stub
+from jsutils.stubs.stub import get_stub
 
 
 class User:

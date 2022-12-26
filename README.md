@@ -16,7 +16,7 @@ for each environment your application will run in. For example, your project str
     │   ├── production.json
     │   ├── qa.json
     │   └── test.json
-    ├── src/
+    ├── jsutils/
     │   └── project files
     └── test/
         └── test files
@@ -36,7 +36,7 @@ Where each file in the config directory has contents like:
 
 Then from your application:
 ```python
-from jsutils.config import get_config
+from config import get_config
 
 config = get_config()
 print(config)  # Config(int_key=13, array_key=('a', 'b', 'c'), object_key=ObjectKey(application_name='jsutils', application_creator='me')
@@ -45,7 +45,7 @@ print(config)  # Config(int_key=13, array_key=('a', 'b', 'c'), object_key=Object
 By default, the module will load the configuration file corresponding to the value in `os.environ['ENV']`. If no value is present, it will default to `'test'`. If there is no file for the specified (or default) environment, an `ImportException` will be raised. The environment can be passed directly to the factory function as can the directory.
 
 ```python
-from jsutils.config import get_config
+from config import get_config
 
 config = get_config(directory='./deep/config/directory/', environment='production')
 ```
@@ -162,7 +162,7 @@ This class and its factory function provides an alternative to the Mock objects 
 The stub can be instantiated with a set of attributes.
 
 ```python
-from jsutils.stubs impor get_stub, Stub
+from stubs impor get_stub, Stub
 
 stub1 = Stub(attrs={'prop1': 'value1', 'prop2': 1.61803})
 stub1.prop1  # 'value1'
@@ -177,7 +177,7 @@ stub2.prop4  # False
 Stubs can be configured to return a specific value or to raise an exception by default. If both are configured, the exception will be raised.
 
 ```python
-from jsutils.stubs import get_stub
+from stubs import get_stub
 stub1 = get_stub()
 stub1.returns('Hello there')
 
@@ -202,7 +202,7 @@ The stub has a helper method to assert that a call with a specific signature was
 ```python
 from unittest.mock import ANY
 
-from jsutils.stubs import get_stub
+from stubs import get_stub
 
 def test_should_know_all_calls():
     stub = get_stub()
@@ -222,7 +222,7 @@ def test_should_know_all_calls():
 If your stub needs more complicated behavior, you can provide a function that the stub will pass the arguments to. The fake behavior takes priority over all other behaviors.
 
 ```python
-from jsutils.stubs import get_stub
+from stubs import get_stub
 
 def fake_func(arg1, args2):
     return args1 + arg2
@@ -239,7 +239,7 @@ stub('first', 'second')  # 'firstsecond'
 The stub can be configured to return a value or raise an exception on a specified 0 index based call. The stub will fall back to its default behavior if the specified call has not been configured. There are convenience functions for setting first, second, and third call behavior. Method chaining is required for proper use.
 
 ```python
-from jsutils.stubs import get_stub
+from stubs import get_stub
 
 stub = get_stub()
 stub.return('default_value')
@@ -258,7 +258,7 @@ stub()  # 'default_value'
 The stub can be configured to have specific behavior for specific call arguments. This behavior can be based on a call count or fall back to a default behavior. Call signature behavior supercedes call count and default behavior when applicable, but is superceded in priority by fake behaviors. Method chaining is required for proper use.
 
 ```python
-from jsutils.stubs import get_stub
+from stubs import get_stub
 
 stub = get_stub()
 stub.with_args('first', second_arg='second').returns(42)
@@ -276,7 +276,7 @@ stub('first', second_arg='second')  # 42
 The Stub class and get_stub function can also be used to replace a method on an existing object with a stub. The created original behavior of the methods can be restored with the restore method.
 
 ```python
-from jsutils.stubs import get_stub, Stub
+from stubs import get_stub, Stub
 
 class SomeClass:
     def method_1(self):
