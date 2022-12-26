@@ -1,6 +1,6 @@
 import pytest
 
-from src.stubs.behaviors.fake_behavior import FakeBehavior
+from jsutils.stubs.behaviors.fake_behavior import FakeBehavior
 
 
 @pytest.fixture

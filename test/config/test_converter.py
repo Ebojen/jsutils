@@ -1,6 +1,6 @@
 import pytest
 
-from src.config.converter import convert
+from jsutils.config.converter import convert
 
 
 class TestConvertValue:

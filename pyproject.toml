@@ -1,14 +1,18 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["jsutils"]
 
 [project]
-name = "configgetter"
-version = "0.0.2"
+name = "javascript-utils"
+version = "1.0.0"
 authors = [
-  { name="Robert Brieler", email="rob.brieler@gmail.com" },
+    { name="Robert Brieler", email="rob.brieler@gmail.com" },
 ]
-description = "A package for building immutable configuration objects"
+license = { file = "LICENSE" }
+description = "Python utilities inspired by npm packages"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
@@ -16,3 +20,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+keywords = ["config", "configuration", "stubs", "sinon", "testing"]
+
+[project.optional-dependencies]
+dev = ["pytest", "coverage"]
+
+[project.urls]
+Homepage="https://github.com/Ebojen/jsutils"

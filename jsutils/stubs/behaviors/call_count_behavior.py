@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.stubs.behaviors.default_behavior import DefaultBehavior
+from .default_behavior import DefaultBehavior
 
 
 class CallNotImplementedError(Exception):

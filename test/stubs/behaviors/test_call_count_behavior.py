@@ -1,10 +1,10 @@
 import pytest
 
-from src.stubs.behaviors.call_count_behavior import (
+from jsutils.stubs.behaviors.call_count_behavior import (
     CallCountBehavior,
     CallNotImplementedError,
 )
-from src.stubs.behaviors.default_behavior import DefaultBehavior
+from jsutils.stubs.behaviors.default_behavior import DefaultBehavior
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-from src.config.merger import merge_dicts
+from jsutils.config.merger import merge_dicts
 
 
 class TestMerger:
